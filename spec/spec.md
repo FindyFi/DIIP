@@ -113,12 +113,13 @@ The W3C Verifiable Credential Data Model ([[ref: W3C VCDM]]) defines structure a
 
 The SD-JWT-based Verifiable Credentials specification ([[ref: SD-JWT VC]]) defines a credential format that are serialized in JSON Web Tokens ([[ref: JWT]]s) and enable selective disclosure. [[ref: SD-JWT VC]] is used as a credential format for person identification data (PID) in [[ref: HAIP]] and [[ref: ARF]] (in addition to `mDocs`).
 
-[[ref: W3C VCDM]] recommends using Securing Verifiable Credentials using JOSE and COSE ([[ref: VC-JOSE-COSE]]) as an *enveloping proof* mechanism and 
-Verifiable Credential Data Integrity 1.0 ([[ref: VC-DATA-INTEGRITY]]) as an *embedded proof* mechanism.
+[[ref: W3C VCDM]] recommends using Securing Verifiable Credentials using JOSE and COSE ([[ref: VC-JOSE-COSE]]) as an *enveloping proof* mechanism and Verifiable Credential Data Integrity 1.0 ([[ref: VC-DATA-INTEGRITY]]) as an *embedded proof* mechanism.
 
 To keep things as simple as possible, DIIP requires implementations to use `SD-JWT` as the mechanism to secure also [[ref: W3C VCDM]]-based credentials.
 
-**Requirement: DIIP-compliant implementations MUST support both [[ref: W3C VCDM]] and [[ref: SD-JWT VC]] as a credential format.**
+**Requirement: DIIP-compliant implementations MUST support [[ref: W3C VCDM]] as a credential format.**
+
+**Requirement: DIIP-compliant implementations MUST support [[ref: SD-JWT VC]] as a credential format.**
 
 **Requirement: DIIP-compliant implementations MUST support [Securing JSON-LD Verifiable Credentials with SD-JWT](https://www.w3.org/TR/vc-jose-cose/#secure-with-sd-jwt) as specified in ([[ref: VC-JOSE-COSE]]).**
 
@@ -152,8 +153,6 @@ Authorization Code Flow provides a more advanced way of implementing credential 
 **Requirement: DIIP-compliant implementations MUST support both *Pre-Authorized Code Flow* and *Authorization Code Flow*.**
 
 **Requirement: DIIP-compliant implementations MUST support the Transaction Code when using *Pre-Authorized Code Flow*.**
-
-**Requirement: DIIP-compliant implementations MUST support the `trust_chain` claim when using *Pre-Authorized Code Flow*.**
 
 **Requirement: DIIP-compliant implementations MUST NOT assume the Authorization Server is on the same domain as the [[ref: Issuer]].**
 
