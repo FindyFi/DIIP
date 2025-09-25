@@ -1,17 +1,17 @@
 
-name: spec-up-render
+name: spec-up-render-develop
 
 on:
   push:
     branches:
-      - main
+      - develop
 
 jobs:
   build-and-deploy-spec:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
+        uses: actions/checkout@v5 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
         with:
           persist-credentials: false
 
@@ -22,10 +22,10 @@ jobs:
           rm -rf node_modules
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3.7.3
+        uses: peaceiris/actions-gh-pages@v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+          publish_dir: ./draft/
           allow_empty_commit: true
           force_orphan: true
 

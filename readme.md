@@ -1,8 +1,13 @@
 # Decentralized Identity Interop Profile (DIIP)
 
-**Latest Draft:**
-The latest draft can be found at:
+**Latest Release:**
+The latest DIIP release can be found at:
 [https://FIDEScommunity.github.io/DIIP](https://FIDEScommunity.github.io/DIIP)
+
+
+**Latest Draft:**
+The latest draft of the next version can be found at:
+[https://FIDEScommunity.github.io/DIIP/draft](https://FIDEScommunity.github.io/DIIP/draft)
 
 
 ## Contributing
