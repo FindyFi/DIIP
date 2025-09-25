@@ -12,6 +12,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  statuses: write
 
 # Allow only one concurrent deployment per branch/PR
 concurrency:
@@ -251,17 +252,24 @@ jobs:
       - name: Create deployment status
         if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/multi')
         uses: actions/github-script@v7
+        continue-on-error: true
         with:
           script: |
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: 'success',
-              description: 'Draft deployed successfully',
-              target_url: '${{ steps.determine-path.outputs.url }}',
-              context: 'github-pages/draft'
-            });
+            try {
+              await github.rest.repos.createCommitStatus({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: context.sha,
+                state: 'success',
+                description: 'Draft deployed successfully',
+                target_url: '${{ steps.determine-path.outputs.url }}',
+                context: 'github-pages/draft'
+              });
+              console.log('Commit status created successfully');
+            } catch (error) {
+              console.log('Could not create commit status:', error.message);
+              console.log('This is not critical - deployment was successful');
+            }
 
   # Cleanup job for closed PRs
   cleanup-pr:
