@@ -106,3 +106,16 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Spec-Up generated files and build artifacts
+*.html
+!spec/**/*.html
+
+# GitHub Pages deployment artifacts  
+_site/
+draft/
+pr/
+latest/
+
+# GitHub Actions artifacts
+.github/workflows/artifacts/

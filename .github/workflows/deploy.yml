@@ -1,0 +1,232 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    types: [ opened, synchronize, reopened, closed ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  pull-requests: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    if: ${{ !(github.event_name == 'pull_request' && github.event.action == 'closed') }}
+    outputs:
+      deployment-path: ${{ steps.determine-path.outputs.path }}
+      deployment-url: ${{ steps.determine-path.outputs.url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build documentation
+        run: npm run render
+
+      - name: Determine deployment path and URL
+        id: determine-path
+        run: |
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "path=." >> $GITHUB_OUTPUT
+            echo "url=https://${{ github.repository_owner }}.github.io/DIIP" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "path=draft" >> $GITHUB_OUTPUT
+            echo "url=https://${{ github.repository_owner }}.github.io/DIIP/draft" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # Get PR number from GitHub context
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+            echo "path=pr/pr-${PR_NUMBER}" >> $GITHUB_OUTPUT
+            echo "url=https://${{ github.repository_owner }}.github.io/DIIP/pr/pr-${PR_NUMBER}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Prepare deployment directory
+        run: |
+          DEPLOY_PATH="${{ steps.determine-path.outputs.path }}"
+          mkdir -p "_site/$DEPLOY_PATH"
+          
+          # Copy built files to the appropriate subdirectory
+          if [[ "$DEPLOY_PATH" == "." ]]; then
+            # For main branch, copy directly to _site root
+            cp -r ./*.html ./*.png ./*.svg ./assets ./custom-assets "_site/"
+            # Also create a copy at /latest for backwards compatibility
+            mkdir -p "_site/latest"
+            cp -r ./*.html ./*.png ./*.svg ./assets ./custom-assets "_site/latest/"
+          else
+            # For other branches, copy to subdirectory
+            cp -r ./*.html ./*.png ./*.svg ./assets ./custom-assets "_site/$DEPLOY_PATH/"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  # Deployment job for main and develop branches
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ needs.build.outputs.deployment-url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Comment on latest commit
+        if: github.ref == 'refs/heads/develop'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deployUrl = '${{ needs.build.outputs.deployment-url }}';
+            const sha = context.sha.substring(0, 7);
+            
+            const message = `🚀 **Draft deployment successful!**
+            
+            📄 **Preview URL:** ${deployUrl}
+            📝 **Branch:** develop
+            🔗 **Commit:** ${sha}
+            
+            The draft version of DIIP has been deployed and is now available for review.`;
+            
+            // This will create a deployment status, which appears in the commit status checks
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'success',
+              description: 'Draft deployed successfully',
+              target_url: deployUrl,
+              context: 'github-pages/draft'
+            });
+
+  # Deployment job for pull requests
+  deploy-pr:
+    environment:
+      name: github-pages
+      url: ${{ needs.build.outputs.deployment-url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const deployUrl = '${{ needs.build.outputs.deployment-url }}';
+            const prNumber = context.payload.pull_request.number;
+            
+            const message = `🚀 **Preview deployment successful!**
+            
+            📄 **Preview URL:** ${deployUrl}
+            📝 **PR:** #${prNumber}
+            🔄 **Status:** Ready for review
+            
+            This preview will be updated automatically when you push new commits to this PR.
+            
+            > The preview will be removed when the PR is closed or merged.`;
+            
+            // Check if we already commented
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            
+            const existingComment = comments.data.find(comment => 
+              comment.user.login === 'github-actions[bot]' && 
+              comment.body.includes('Preview deployment successful!')
+            );
+            
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: message
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: message
+              });
+            }
+
+  # Cleanup job for closed PRs
+  cleanup-pr:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' }}
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove PR directory
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_DIR="pr/pr-${PR_NUMBER}"
+          
+          if [ -d "$PR_DIR" ]; then
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git rm -rf "$PR_DIR"
+            git commit -m "Clean up preview for PR #${PR_NUMBER}" || exit 0
+            git push origin gh-pages
+            echo "Cleaned up preview directory: $PR_DIR"
+          else
+            echo "Preview directory $PR_DIR does not exist, nothing to clean up"
+          fi
+
+      - name: Comment on PR about cleanup
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            
+            const message = `🧹 **Preview cleaned up**
+            
+            The preview deployment for this PR has been removed since the PR was closed.
+            
+            Thank you for your contribution! 🎉`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: message
+            });
