@@ -70,6 +70,7 @@ The workflow manually manages the `gh-pages` branch instead of using GitHub's st
 
 ```
 gh-pages branch:
+├── README.md               (setup instructions)
 ├── index.html              (main branch - stable)
 ├── latest.html             (copy of main branch)
 ├── assets/                 (main branch assets)
@@ -96,17 +97,31 @@ gh-pages branch:
 ### Permissions Required
 
 The workflow requires the following permissions:
-
 - `contents: write` - To manage the gh-pages branch manually
-- `pages: write` - To enable GitHub Pages
-- `id-token: write` - For GitHub Actions authentication
 - `pull-requests: write` - To comment on pull requests
 
 ### Setup Requirements
 
-1. **Enable GitHub Pages**: The workflow automatically enables Pages with `gh-pages` branch as source
-2. **Branch Protection** (recommended): Protect the `main` branch to ensure only reviewed changes are deployed to production
-3. **No manual setup needed**: The workflow creates the `gh-pages` branch if it doesn't exist
+#### **Manual GitHub Pages Setup Required**
+
+Due to GitHub API permission limitations, GitHub Pages must be enabled manually:
+
+1. **One-time setup**: After the first workflow run:
+    1. Go to repository **Settings > Pages**
+    2. Under **Source**, select **Deploy from a branch**
+    3. Select branch **gh-pages** and folder **/ (root)**
+    4. Click **Save**
+
+2. **Verification**: The workflow will automatically detect if Pages is enabled and provide setup instructions if needed
+
+3. **Branch Protection** (recommended): Protect the `main` branch to ensure only reviewed changes are deployed to production
+
+#### Automatic Features
+
+- **Creates gh-pages branch** if it doesn't exist
+- **Provides setup instructions** in the branch README
+- **Detects Pages status** and shows appropriate messages
+- **Workflow summaries** with setup guidance when needed
 
 ### Concurrent Deployment Safety
 
@@ -115,12 +130,27 @@ The workflow requires the following permissions:
 - No conflicts between simultaneous deployments to different paths
 - Safe parallel deployments of different branches/PRs
 
+### Troubleshooting
+
+#### "Resource not accessible by integration (403)"
+
+This error occurs when trying to enable GitHub Pages via API. **Solution**: Enable Pages manually as described above.
+
+#### "404 - Page not found"
+
+This usually means GitHub Pages isn't enabled yet. **Solution**: Follow the manual setup instructions above.
+
+#### "Deployment successful but site not updating"
+
+GitHub Pages may take a few minutes to update after deployment. Check the Pages settings to ensure it's pointing to the `gh-pages` branch.
+
 ### Maintenance
 
 The workflow handles all maintenance automatically:
 
-- ✅ **No overwrites**: Each deployment only touches its own directory
-- ✅ **Automatic cleanup**: PR directories removed when PRs close
-- ✅ **Preserves history**: All deployments remain available
-- ✅ **Self-healing**: Creates gh-pages branch if missing
-- ✅ **Idempotent**: Safe to re-run without side effects
+- **No overwrites**: Each deployment only touches its own directory
+- **Automatic cleanup**: PR directories removed when PRs close
+- **Preserves history**: All deployments remain available
+- **Self-healing**: Creates gh-pages branch if missing
+- **Idempotent**: Safe to re-run without side effects
+- **Clear feedback**: Provides setup instructions when needed
