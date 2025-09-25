@@ -10,20 +10,27 @@ on:
     types: [ opened, synchronize, reopened, closed ]
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
   pull-requests: write
   statuses: write
 
-# Allow only one concurrent deployment per branch/PR
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
-  group: pages-${{ github.ref }}-${{ github.event.pull_request.number || 'no-pr' }}
+  group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Build and deploy job (not for PR closures)
-  deploy:
+  # Build job
+  build:
     runs-on: ubuntu-latest
     if: ${{ !(github.event_name == 'pull_request' && github.event.action == 'closed') }}
+    outputs:
+      deployment-path: ${{ steps.determine-path.outputs.path }}
+      deployment-url: ${{ steps.determine-path.outputs.url }}
+      branch-name: ${{ steps.determine-path.outputs.branch }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -62,101 +69,173 @@ jobs:
             echo "branch=pr-${PR_NUMBER}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Checkout gh-pages branch
+      - name: Checkout existing gh-pages content
         uses: actions/checkout@v4
         with:
           ref: gh-pages
-          path: gh-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
+          path: existing-pages
         continue-on-error: true
 
-      - name: Initialize gh-pages if it doesn't exist
-        run: |
-          if [ ! -d "gh-pages" ]; then
-            mkdir gh-pages
-            cd gh-pages
-            git init
-            git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-            git checkout --orphan gh-pages
-            echo "# GitHub Pages for DIIP" > README.md
-            echo "" >> README.md
-            echo "This branch contains the deployed GitHub Pages content for the Decentralized Identity Interop Profile (DIIP)." >> README.md
-            echo "" >> README.md
-            echo "## Setup" >> README.md
-            echo "To enable GitHub Pages for this repository:" >> README.md
-            echo "1. Go to repository Settings > Pages" >> README.md
-            echo "2. Under 'Source', select 'Deploy from a branch'" >> README.md
-            echo "3. Select branch 'gh-pages' and folder '/ (root)'" >> README.md
-            echo "4. Click 'Save'" >> README.md
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add README.md
-            git commit -m "Initialize gh-pages branch with setup instructions"
-            git push origin gh-pages
-            echo "Created gh-pages branch with setup instructions"
-          fi
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
-      - name: Deploy to target directory
+      - name: Prepare deployment directory with simultaneous deployments
         run: |
           DEPLOY_PATH="${{ steps.determine-path.outputs.path }}"
-          cd gh-pages
           
-          # Configure git
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Create _site directory for deployment
+          mkdir -p _site
           
-          # Create/update the target directory
+          # Copy existing gh-pages content if it exists
+          if [ -d "existing-pages" ]; then
+            # Copy everything except .git
+            rsync -av --exclude='.git' existing-pages/ _site/ 2>/dev/null || true
+            echo "Preserved existing deployments"
+          else
+            echo "No existing deployments found"
+          fi
+          
+          # Update the specific deployment path
           if [[ "$DEPLOY_PATH" == "." ]]; then
             # For main branch, update root files but preserve subdirectories
-            find . -maxdepth 1 -name "*.html" -delete 2>/dev/null || true
-            find . -maxdepth 1 -name "*.png" -delete 2>/dev/null || true
-            find . -maxdepth 1 -name "*.js" -delete 2>/dev/null || true
-            rm -rf ./assets ./custom-assets 2>/dev/null || true
+            find _site -maxdepth 1 -name "*.html" -delete 2>/dev/null || true
+            find _site -maxdepth 1 -name "*.png" -delete 2>/dev/null || true
+            find _site -maxdepth 1 -name "*.svg" -delete 2>/dev/null || true
+            find _site -maxdepth 1 -name "*.js" -delete 2>/dev/null || true
+            rm -rf _site/assets _site/custom-assets 2>/dev/null || true
           
-            # Copy new files
-            cp ../*.html . 2>/dev/null || true
-            cp ../*.png . 2>/dev/null || true  
-            cp ../*.js . 2>/dev/null || true
-            cp -r ../assets . 2>/dev/null || true
-            cp -r ../custom-assets . 2>/dev/null || true
+            # Copy new files to root
+            cp ./*.html _site/ 2>/dev/null || true
+            cp ./*.png _site/ 2>/dev/null || true  
+            cp ./*.svg _site/ 2>/dev/null || true
+            cp ./*.js _site/ 2>/dev/null || true
+            cp -r ./assets _site/ 2>/dev/null || true
+            cp -r ./custom-assets _site/ 2>/dev/null || true
           
             # Also create/update latest directory
-            rm -rf latest
-            mkdir -p latest
-            cp ../*.html ./latest/ 2>/dev/null || true
-            cp ../*.png ./latest/ 2>/dev/null || true
-            cp ../*.js ./latest/ 2>/dev/null || true
-            cp -r ../assets ./latest/ 2>/dev/null || true
-            cp -r ../custom-assets ./latest/ 2>/dev/null || true
+            rm -rf _site/latest
+            mkdir -p _site/latest
+            cp ./*.html _site/latest/ 2>/dev/null || true
+            cp ./*.png _site/latest/ 2>/dev/null || true
+            cp ./*.svg _site/latest/ 2>/dev/null || true  
+            cp ./*.js _site/latest/ 2>/dev/null || true
+            cp -r ./assets _site/latest/ 2>/dev/null || true
+            cp -r ./custom-assets _site/latest/ 2>/dev/null || true
+          
+            echo "Updated main deployment (root + /latest)"
           else
             # For develop/PR branches, update specific subdirectory
-            rm -rf "$DEPLOY_PATH"
-            mkdir -p "$DEPLOY_PATH"
-            cp ../*.html "./$DEPLOY_PATH/" 2>/dev/null || true
-            cp ../*.png "./$DEPLOY_PATH/" 2>/dev/null || true
-            cp ../*.js "./$DEPLOY_PATH/" 2>/dev/null || true
-            cp -r ../assets "./$DEPLOY_PATH/" 2>/dev/null || true
-            cp -r ../custom-assets "./$DEPLOY_PATH/" 2>/dev/null || true
+            rm -rf "_site/$DEPLOY_PATH"
+            mkdir -p "_site/$DEPLOY_PATH"
+            cp ./*.html "_site/$DEPLOY_PATH/" 2>/dev/null || true
+            cp ./*.png "_site/$DEPLOY_PATH/" 2>/dev/null || true
+            cp ./*.svg "_site/$DEPLOY_PATH/" 2>/dev/null || true
+            cp ./*.js "_site/$DEPLOY_PATH/" 2>/dev/null || true
+            cp -r ./assets "_site/$DEPLOY_PATH/" 2>/dev/null || true
+            cp -r ./custom-assets "_site/$DEPLOY_PATH/" 2>/dev/null || true
+          
+            echo "Updated deployment: $DEPLOY_PATH"
           fi
           
-          # Commit and push changes
-          git add .
-          if git diff --staged --quiet; then
-            echo "No changes to deploy"
-          else
-            BRANCH_NAME="${{ steps.determine-path.outputs.branch }}"
-            git commit -m "Deploy $BRANCH_NAME to $DEPLOY_PATH"
-            git push origin gh-pages
-            echo "Successfully deployed to $DEPLOY_PATH"
-            echo "Will be available at: ${{ steps.determine-path.outputs.url }}"
-          fi
+          # Create a deployment info file
+          echo "# GitHub Pages Deployment Info" > _site/deployment-info.md
+          echo "Last updated: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> _site/deployment-info.md
+          echo "Deployed from: ${{ steps.determine-path.outputs.branch }}" >> _site/deployment-info.md
+          echo "Deployment path: $DEPLOY_PATH" >> _site/deployment-info.md
+          echo "" >> _site/deployment-info.md
+          echo "## Available deployments:" >> _site/deployment-info.md
+          find _site -type f -name "index.html" | sed 's|_site/||' | sed 's|/index.html||' | sed 's|^$|/ (main)|' | sort >> _site/deployment-info.md
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  # Single deployment job that handles all cases
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ needs.build.outputs.deployment-url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed') }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Comment on PR with preview link
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deployUrl = '${{ needs.build.outputs.deployment-url }}';
+            const prNumber = context.payload.pull_request.number;
+            
+            const message = `🚀 **Preview deployment successful!**
+            
+            📄 **Preview URL:** ${deployUrl}
+            📝 **PR:** #${prNumber}
+            🔄 **Status:** Ready for review
+            
+            This preview will be updated automatically when you push new commits to this PR.
+            
+            > The preview will be removed when the PR is closed or merged.`;
+            
+            // Check if we already commented
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            
+            const existingComment = comments.data.find(comment => 
+              comment.user.login === 'github-actions[bot]' && 
+              comment.body.includes('Preview deployment successful!')
+            );
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: message
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: message
+              });
+            }
+
+      - name: Create commit status for develop branch
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/multi')
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            try {
+              await github.rest.repos.createCommitStatus({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: context.sha,
+                state: 'success',
+                description: 'Draft deployed successfully',
+                target_url: '${{ needs.build.outputs.deployment-url }}',
+                context: 'github-pages/draft'
+              });
+              console.log('Commit status created successfully');
+            } catch (error) {
+              console.log('Could not create commit status:', error.message);
+              console.log('This is not critical - deployment was successful');
+            }
 
       - name: Check GitHub Pages status and provide setup instructions
         uses: actions/github-script@v7
         with:
           script: |
-            const deployUrl = '${{ steps.determine-path.outputs.url }}';
-            const path = '${{ steps.determine-path.outputs.path }}';
+            const deployUrl = '${{ needs.build.outputs.deployment-url }}';
+            const path = '${{ needs.build.outputs.deployment-path }}';
             
             try {
               // Try to get pages info to see if it's enabled
@@ -201,103 +280,62 @@ jobs:
               }
             }
 
-      - name: Comment on PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const deployUrl = '${{ steps.determine-path.outputs.url }}';
-            const prNumber = context.payload.pull_request.number;
-            
-            const message = `🚀 **Preview deployment successful!**
-            
-            📄 **Preview URL:** ${deployUrl}
-            📝 **PR:** #${prNumber}
-            🔄 **Status:** Ready for review
-            
-            This preview will be updated automatically when you push new commits to this PR.
-            
-            > **Note:** If the preview URL shows a 404, ensure GitHub Pages is enabled in repository Settings > Pages with source set to 'gh-pages' branch.
-            
-            > The preview will be removed when the PR is closed or merged.`;
-            
-            // Check if we already commented
-            const comments = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-            });
-            
-            const existingComment = comments.data.find(comment => 
-              comment.user.login === 'github-actions[bot]' && 
-              comment.body.includes('Preview deployment successful!')
-            );
-            
-            if (existingComment) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existingComment.id,
-                body: message
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                body: message
-              });
-            }
-
-      - name: Create deployment status
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/multi')
-        uses: actions/github-script@v7
-        continue-on-error: true
-        with:
-          script: |
-            try {
-              await github.rest.repos.createCommitStatus({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                sha: context.sha,
-                state: 'success',
-                description: 'Draft deployed successfully',
-                target_url: '${{ steps.determine-path.outputs.url }}',
-                context: 'github-pages/draft'
-              });
-              console.log('Commit status created successfully');
-            } catch (error) {
-              console.log('Could not create commit status:', error.message);
-              console.log('This is not critical - deployment was successful');
-            }
-
   # Cleanup job for closed PRs
   cleanup-pr:
     runs-on: ubuntu-latest
+    needs: build
     if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' }}
     steps:
-      - name: Checkout gh-pages branch
+      - name: Checkout existing gh-pages content
         uses: actions/checkout@v4
         with:
           ref: gh-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
+          path: existing-pages
         continue-on-error: true
 
-      - name: Remove PR directory
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Remove PR directory and redeploy
         run: |
           PR_NUMBER="${{ github.event.pull_request.number }}"
           PR_DIR="pr/pr-${PR_NUMBER}"
           
-          if [ -d "$PR_DIR" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git rm -rf "$PR_DIR"
-            git commit -m "Clean up preview for PR #${PR_NUMBER}" || exit 0
-            git push origin gh-pages
-            echo "Cleaned up preview directory: $PR_DIR"
+          # Create _site directory for deployment
+          mkdir -p _site
+          
+          # Copy existing gh-pages content if it exists
+          if [ -d "existing-pages" ]; then
+            rsync -av --exclude='.git' existing-pages/ _site/
+            echo "Copied existing deployments"
+          
+            # Remove the specific PR directory
+            if [ -d "_site/$PR_DIR" ]; then
+              rm -rf "_site/$PR_DIR"
+              echo "Removed PR directory: $PR_DIR"
+          
+              # Update deployment info
+              echo "# GitHub Pages Deployment Info" > _site/deployment-info.md
+              echo "Last updated: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> _site/deployment-info.md
+              echo "Action: Cleaned up PR #${PR_NUMBER}" >> _site/deployment-info.md
+              echo "" >> _site/deployment-info.md
+              echo "## Available deployments:" >> _site/deployment-info.md
+              find _site -type f -name "index.html" | sed 's|_site/||' | sed 's|/index.html||' | sed 's|^$|/ (main)|' | sort >> _site/deployment-info.md
+            else
+              echo "PR directory $PR_DIR does not exist, nothing to clean up"
+              exit 0
+            fi
           else
-            echo "Preview directory $PR_DIR does not exist, nothing to clean up"
+            echo "No existing deployments found, nothing to clean up"
+            exit 0
           fi
+
+      - name: Upload artifact for cleanup
+        uses: actions/upload-pages-artifact@v3
+
+      - name: Deploy cleaned up pages
+        id: cleanup-deployment
+        uses: actions/deploy-pages@v4
 
       - name: Comment on PR about cleanup
         uses: actions/github-script@v7
