@@ -1,7 +1,7 @@
 {
   "name": "decentralized-identity-interop-profile",
   "description": "Decentralized Identity Interop Profile",
-  "version": "4.0.0",
+  "version": "5.0.0-draft1",
   "license": "Apache 2.0",
   "repository": {
     "type": "git",
