@@ -7,7 +7,7 @@ Decentralized Identity Interop Profile v4
 [https://FIDEScommunity.github.io/DIIP](https://FIDEScommunity.github.io/DIIP)
 
 **Latest Draft:**
-[https://FIDEScommunity.github.io/DIIP//draft](https://FIDEScommunity.github.io/DIIP/draft)
+[https://FIDEScommunity.github.io/DIIP/draft](https://FIDEScommunity.github.io/DIIP/draft)
 
 Editors:
 ~ [Eelco Klaver](https://www.linkedin.com/in/eklaver/) (Credenco)
