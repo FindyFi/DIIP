@@ -1,7 +1,7 @@
-Decentralized Identity Interop Profile v5-draft
+Decentralized Identity Interop Profile v4
 ==================
 
-**Profile Status:** Draft
+**Profile Status:** Final
 
 **Latest Release:**
 [https://FIDEScommunity.github.io/DIIP](https://FIDEScommunity.github.io/DIIP)
