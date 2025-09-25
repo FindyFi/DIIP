@@ -10,11 +10,7 @@ on:
     types: [ opened, synchronize, reopened, closed ]
 
 permissions:
-  statuses: write
-  deployments: write
   contents: write
-  pages: write
-  id-token: write
   pull-requests: write
 
 # Allow only one concurrent deployment per branch/PR
@@ -81,12 +77,22 @@ jobs:
             git init
             git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
             git checkout --orphan gh-pages
-            echo "# GitHub Pages" > README.md
+            echo "# GitHub Pages for DIIP" > README.md
+            echo "" >> README.md
+            echo "This branch contains the deployed GitHub Pages content for the Decentralized Identity Interop Profile (DIIP)." >> README.md
+            echo "" >> README.md
+            echo "## Setup" >> README.md
+            echo "To enable GitHub Pages for this repository:" >> README.md
+            echo "1. Go to repository Settings > Pages" >> README.md
+            echo "2. Under 'Source', select 'Deploy from a branch'" >> README.md
+            echo "3. Select branch 'gh-pages' and folder '/ (root)'" >> README.md
+            echo "4. Click 'Save'" >> README.md
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add README.md
-            git commit -m "Initialize gh-pages branch"
+            git commit -m "Initialize gh-pages branch with setup instructions"
             git push origin gh-pages
+            echo "Created gh-pages branch with setup instructions"
           fi
 
       - name: Deploy to target directory
@@ -141,25 +147,56 @@ jobs:
             git commit -m "Deploy $BRANCH_NAME to $DEPLOY_PATH"
             git push origin gh-pages
             echo "Successfully deployed to $DEPLOY_PATH"
+            echo "Will be available at: ${{ steps.determine-path.outputs.url }}"
           fi
 
-      - name: Enable GitHub Pages
+      - name: Check GitHub Pages status and provide setup instructions
         uses: actions/github-script@v7
         with:
           script: |
+            const deployUrl = '${{ steps.determine-path.outputs.url }}';
+            const path = '${{ steps.determine-path.outputs.path }}';
+            
             try {
-              await github.rest.repos.createPagesSite({
+              // Try to get pages info to see if it's enabled
+              const pages = await github.rest.repos.getPages({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                source: {
-                  branch: 'gh-pages',
-                  path: '/'
-                }
               });
+            
+              console.log(`GitHub Pages is enabled and configured`);
+              console.log(`Site URL: ${pages.data.html_url}`);
+              console.log(`Deployment URL: ${deployUrl}`);
+            
             } catch (error) {
-              // Pages might already be enabled, that's fine
-              if (error.status !== 409) {
-                console.log('Error enabling pages:', error.message);
+              if (error.status === 404) {
+                console.log('GitHub Pages is not enabled for this repository.');
+                console.log('');
+                console.log('To enable GitHub Pages:');
+                console.log('   1. Go to repository Settings > Pages');
+                console.log('   2. Under "Source", select "Deploy from a branch"');
+                console.log('   3. Select branch "gh-pages" and folder "/ (root)"');
+                console.log('   4. Click "Save"');
+                console.log('');
+                console.log(`After setup, your site will be available at: ${deployUrl}`);
+            
+                // Create a summary for the workflow
+                await core.summary
+                  .addHeading('GitHub Pages Setup Required')
+                  .addRaw('GitHub Pages is not enabled for this repository. ')
+                  .addRaw('The content has been deployed to the gh-pages branch, but you need to enable Pages manually.')
+                  .addHeading('Setup Instructions')
+                  .addList([
+                    'Go to repository **Settings > Pages**',
+                    'Under **Source**, select **Deploy from a branch**', 
+                    'Select branch **gh-pages** and folder **/ (root)**',
+                    'Click **Save**'
+                  ])
+                  .addRaw(`After setup, your site will be available at: **${deployUrl}**`)
+                  .write();
+            
+              } else {
+                console.log('Error checking pages status:', error.message);
               }
             }
 
@@ -178,6 +215,8 @@ jobs:
             🔄 **Status:** Ready for review
             
             This preview will be updated automatically when you push new commits to this PR.
+            
+            > **Note:** If the preview URL shows a 404, ensure GitHub Pages is enabled in repository Settings > Pages with source set to 'gh-pages' branch.
             
             > The preview will be removed when the PR is closed or merged.`;
             
