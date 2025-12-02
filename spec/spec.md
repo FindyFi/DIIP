@@ -34,9 +34,10 @@ The Decentralized Identity Interop Profile, or DIIP for short, defines requireme
 | Signature scheme                                                         | SD-JWT as specified in [[ref: VC-JOSE-COSE]] (20 March 2025) and [[ref: SD-JWT VC]] (draft 13) |
 | Signature algorithm                                                      | [[ref: ES256]] (RFC 7518 May 2015)                                                             |
 | Identifying [[ref: Issuer]]s, [[ref: Holder]]s, and [[ref: Verifier]]s   | [[ref: did:jwk]] (Commit 8137ac4, Apr 14 2022) and [[ref: did:web]] (31 July 2024)             |
-| Issuance protocol                                                        | OpenID for Verifiable Credentials Issuance ([[ref: OID4VCI]]) (1.0).                           |
-| Presentation protocol                                                    | OpenID for Verifiable Presentations ([[ref: OID4VP]]) (1.0)                                    |
+| Issuance protocol                                                        | OpenID for Verifiable Credentials Issuance 1.0 ([[ref: OID4VCI]]) (Final).                     |
+| Presentation protocol                                                    | OpenID for Verifiable Presentations 1.0 ([[ref: OID4VP]]) (Final)                              |
 | Revocation mechanism                                                     | [[ref: IETF Token Status List]] (Draft 13, 2025-11-11)                                         |
+| Trust Establishment                                                      | [[def: OpenID Fed DCP]] (Appendix B of this profile)                                           |
 
 The [Normative References](#normative-references) section links to the versions of specifications that DIIP-compliant implementations must support.
 
@@ -142,7 +143,15 @@ DIIP prefers decentralized identifiers ([[ref: DID]]s) as identifiers. An entity
 
 Signatures in [[ref: Digital Credential]]s can be used to verify that the content of a credential has not been tampered with. But anyone can sign a credential and put anything in the issuer field. [[ref: Digital Credential]] ecosystems require that there is a way for a [[ref: Verifier]] to check who is the [[ref: Issuer]] of a [[ref: Digital Credential]]. Equally, a user might want to be informed about the trustworthiness of a [[ref: Verifier]] before choosing to share credentials.
 
-The DIIP v4 profile doesn't require compliant implementations to support any trust establishment mechanism.
+DIIP enables trust ecosystems to use [[ref: OpenID Fed DCP]] – a light-weight profile of the [[ref: OpenID Federation]], authred for use cases including [[ref: Wallet]]s and [[ref: Digital Credential]]s. The [[ref: OpenID Fed DCP]] specification is an appendix to this version of the DIIP profile. In the future, the [[ref: OpenID Fed DCP]] profile will probably be donated to be maintained elsewhere.
+
+**Requirement: DIIP-compliant [[ref: Issuer]] [[ref: Agent]]s MUST support publishing OpenID Federation Entity Configuration as defined in [[ref: OpenID Fed DCP]].**
+
+**Requirement: DIIP-compliant [[ref: Issuer]] [[ref: Agent]]s MUST support issuing the `fed` claim as defined in [[ref: OpenID Fed DCP]] when issuing [[ref: SD-JWT VC]] credentials.**
+
+**Requirement: DIIP-compliant [[ref: Issuer]] [[ref: Agent]]s MUST support issuing the `termsOfUse` attribute as defined in [[ref: OpenID Fed DCP]] when issuing [[ref: W3C VCDM]] credentials.**
+
+**Requirement: DIIP-compliant [[ref: Verifier]] [[ref: Agent]]s MUST support publishing OpenID Federation Entity Configuration as defined in [[ref: OpenID Fed DCP]].**
 
 ### Issuance
 
@@ -299,10 +308,16 @@ This section consolidates in one place common terms used across open standards t
 ~ [Token Status List - draft 13](https://datatracker.ietf.org/doc/draft-ietf-oauth-status-list/13/). Status: Internet-Draft.
 
 [[def: OID4VCI]]
-~ [OpenID for Verifiable Credential Issuance 1.0](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html). Status: Second Implementer's Draft.
+~ [OpenID for Verifiable Credential Issuance 1.0](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html). Status: Final.
 
 [[def: OID4VP]]
-~ [OpenID for Verifiable Presentations 1.0](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html). Status: Third Implementer's Draft.
+~ [OpenID for Verifiable Presentations 1.0](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html). Status: Final.
+
+[[def: OpenID Federation]]
+~ [OpenID Federation 1.0 - draft 42](https://openid.net/specs/openid-federation-1_0.html). Status: draft.
+
+[[def: OpenID Fed DCP]]
+~ [OpenID Federation Digital Credentials Profile - draft 0.1.0](#federation-profile). Status: draft.
 
 [[def: PAR]]
 ~ [RFC 9126 Pushed Authorization Requests](https://datatracker.ietf.org/doc/html/rfc9126). Status: RFC - Proposed Standard.
