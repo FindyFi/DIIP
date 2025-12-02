@@ -6,7 +6,8 @@
       "spec_directory": "./spec",
       "markdown_paths": [
         "spec.md",
-        "future.md"
+        "future.md",
+        "federation-profile.md"
       ],
       "output_path": "./",
       "logo": "logo.png",
