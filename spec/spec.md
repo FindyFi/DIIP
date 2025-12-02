@@ -31,13 +31,13 @@ The Decentralized Identity Interop Profile, or DIIP for short, defines requireme
 
 | Purpose                                                                  | Specification                                                                                  |
 | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| Credential format                                                        | [[ref: W3C VCDM]] 2.0 (20 March 2025) and [[ref: SD-JWT VC]] (draft 08)                            |
-| Signature scheme                                                         | SD-JWT as specified in [[ref: VC-JOSE-COSE]] (20 March 2025) and [[ref: SD-JWT VC]] (draft 08) |
+| Credential format                                                        | [[ref: W3C VCDM]] 2.0 (20 March 2025) and [[ref: SD-JWT VC]] (draft 13)                        |
+| Signature scheme                                                         | SD-JWT as specified in [[ref: VC-JOSE-COSE]] (20 March 2025) and [[ref: SD-JWT VC]] (draft 13) |
 | Signature algorithm                                                      | [[ref: ES256]] (RFC 7518 May 2015)                                                             |
-| Identifying [[ref: Issuer]]s, [[ref: Holder]]s, and [[ref: Verifier]]s   | [[ref: did:jwk]] (Commit 8137ac4, Apr 14 2022) and [[ref: did:web]] (31 July 2024)             |
-| Issuance protocol                                                        | OpenID for Verifiable Credentials Issuance ([[ref: OID4VCI]]) (Draft 15)                       |
-| Presentation protocol                                                    | OpenID for Verifiable Presentations ([[ref: OID4VP]]) (Draft 28)                               |
-| Revocation mechanism                                                     | [[ref: IETF Token Status List]] (Draft 10, 2025-04-16)                                         |
+| Identifying [[ref: Issuer]]s, [[ref: Holder]]s, and [[ref: Verifier]]s   | [[ref: did:jwk]] (Commit 8137ac4, Apr 14 2022) and [[ref: did:web]] (31 July 2024)             |
+| Issuance protocol                                                        | OpenID for Verifiable Credentials Issuance ([[ref: OID4VCI]]) (1.0).                           |
+| Presentation protocol                                                    | OpenID for Verifiable Presentations ([[ref: OID4VP]]) (1.0)                                    |
+| Revocation mechanism                                                     | [[ref: IETF Token Status List]] (Draft 13, 2025-11-11)                                         |
 
 The [Normative References](#normative-references) section links to the versions of specifications that DIIP-compliant implementations must support.
 
@@ -287,13 +287,13 @@ This section consolidates in one place common terms used across open standards t
 ~ `ECDSA` using `P-256` ([[ref: Secp256r1]]) and `SHA-256` as specified in [RFC 7518 JSON Web Algorithms (JWA)](https://datatracker.ietf.org/doc/html/rfc7518). Status: RFC - Proposed Standard.
 
 [[def: IETF Token Status List]]
-~ [Token Status List - draft 10](https://datatracker.ietf.org/doc/draft-ietf-oauth-status-list/10/). Status: Internet-Draft.
+~ [Token Status List - draft 13](https://datatracker.ietf.org/doc/draft-ietf-oauth-status-list/13/). Status: Internet-Draft.
 
 [[def: OID4VCI]]
-~ [OpenID for Verifiable Credential Issuance - draft 15](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-ID2.html). Status: Second Implementer's Draft.
+~ [OpenID for Verifiable Credential Issuance 1.0](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html). Status: Second Implementer's Draft.
 
 [[def: OID4VP]]
-~ [OpenID for Verifiable Presentations - draft 28](https://openid.net/specs/openid-4-verifiable-presentations-1_0-28.html). Status: Third Implementer's Draft.
+~ [OpenID for Verifiable Presentations 1.0](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html). Status: Third Implementer's Draft.
 
 [[def: PAR]]
 ~ [RFC 9126 Pushed Authorization Requests](https://datatracker.ietf.org/doc/html/rfc9126). Status: RFC - Proposed Standard.
@@ -302,7 +302,7 @@ This section consolidates in one place common terms used across open standards t
 ~ [RFC 7636 Proof Key for Code Exchange by OAuth Public Clients](https://datatracker.ietf.org/doc/html/rfc7636). Status: RFC - Proposed Standard.
 
 [[def: SD-JWT VC]]
-~ [SD-JWT-based Verifiable Credentials (SD-JWT VC) - draft 08](https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/08/). Status: WG Document.
+~ [SD-JWT-based Verifiable Credentials (SD-JWT VC) - draft 13](hhttps://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/13/). Status: WG Document.
 
 [[def: Secp256r1]]
 ~ `Secp256r1` curve in [RFC 5480 ECC SubjectPublicKeyInfo Format](https://datatracker.ietf.org/doc/html/rfc5480). Status: RFC - Proposed Standard.
