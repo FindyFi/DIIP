@@ -200,6 +200,7 @@ If the Issuer chooses to make this kind of distinction between the entity issuin
 ### Trust Establishment
 
 **Requirement: To establish trust with the issuer (ensure that the issuer can be trusted), the Verifier MUST resolve the Trust Chain from the issuer's Entity Configuration until it finds a Federation Entity it trusts.**
+**Requirement: The [[ref: Verifier]] MUST verify that the credential is signed with a key included in the `jwt_vc_issuer` metadata in the Entity Configuration of the [[ref: Issuer]]. The `jwks` property in the `jwt_vc_issuer` must contain a key with the `kid` value equal to the `kid` header in the [[ref: SD-JWT VC]] credential.**
 
 #### Example: Verifier Entity Configuration
 
