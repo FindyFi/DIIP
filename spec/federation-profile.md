@@ -40,21 +40,25 @@ This specification uses the terms defined in OpenID Federation [[ref: OpenID Fed
 
 #### Entity Identifier
 
-The Credential Issuer MUST use the value of the `credential_issuer` in its OID4VCI issuer metadata as its Entity Identifier.
+**Requirement: The Credential Issuer MUST use the value of the `credential_issuer` in its OID4VCI issuer metadata as its Entity Identifier.**
 
 The Credential Issuer's Entity Configuration can be found by appending the string `/.well-known/openid-federation` to the Entity Identifier.
 
 #### Issuer Metadata Publication
 
-The Credential Issuer MUST place the OpenID4VCI issuer metadata into the Entity Configuration, in the `openid_credential_issuer` property.
+**Requirement: The Credential Issuer MUST place the OpenID4VCI issuer metadata into the Entity Configuration, in the `openid_credential_issuer` property.**
 
-If the `openid_credential_issuer` property is found in the Entity Configuration, the Wallet MUST use only it and ignore the issuer metadata published in the well-known location defined in OID4VCI.
+**Requirement: The Credential Issuer MUST place the public key material of the keys it uses to sign Digital Credentials in the `jwt_vc_issuer` property. The `jwt_vc_issuer` property MUST include the `jwks` property that contains the Issuer's JSON Web Key Set as defined in RFC7517.** (The `jwt_vc_issuer` property MUST NOT include the `jwks_uri` property.)
+
+**Requirement: If the `openid_credential_issuer` property is found in the Entity Configuration, the Wallet MUST use only it and ignore the issuer metadata published in the well-known location defined in OID4VCI.**
 
 The Credential Issuer MAY place additional metadata into the `federation_entity` Entity Type Identifier.
 
-The metadata in the `openid_credential_issuer` property overrides the metadata in the `federation_entity` property. For example, if both `openid_credential_issuer.display.name` and `federation_entity.organization_name` exist, the Wallet SHOULD show the value of `openid_credential_issuer.display.name` as the name of the issuer.
+**Requirement: The metadata in the `openid_credential_issuer` property MUST override the metadata in the `federation_entity` property.** For example, if both `openid_credential_issuer.display.name` and `federation_entity.organization_name` exist, the Wallet MUST show the value of `openid_credential_issuer.display.name` as the name of the issuer.
 
 #### Example: Credential Issuer Entity Configuration
+
+The following JSON document is a non-normative example of the decoded payload of a Credential Issuer's Entity Configuration.
 
 ```json
 {
@@ -87,8 +91,18 @@ The metadata in the `openid_credential_issuer` property overrides the metadata i
         "sd_jwt_vc_example": "..."
       }
     },
-    "openid-configuration": {
-      "jwks_uri": "https://credential-issuer.example/jwks"
+    "jwt_vc_issuer": {
+      "jwks": [
+        {
+          "kty": "EC",
+          "kid": "MJ2BW-rNshp9sjh3SvwnBIkEsYsU92xVtC3-Fv_lcKc",
+          "alg": "ES256",
+          "crv": "P-256",
+          "x": "JTEE5QghmkA_-7_pZoKIluRzGNvQGtzmpNvb_nAswhE",
+          "y": "A_iBfIseHsdfE7CmI3lIYtKMdfyXXOIpPX_o6O0h0wY",
+          "use": "sig"
+        }
+      ]
     }
   },
   "jwks": [
@@ -108,9 +122,11 @@ The metadata in the `openid_credential_issuer` property overrides the metadata i
 }
 ```
 
+The JWKS in the `jwt_vc_issuer` property contains information about the keys used to sign Digital Credentials. The JWKS on the root level of the Entity Configuration contains information about the key used to sign the Entity Configuration. In the example, the same key is used, but the keys MAY be different.
+
 #### SD-JWT VC Credentials
 
-When the [[ref: Issuer]] issues credentials in the [[ref: SD-JWT VC]] format, the Issuer MUST place its Entity Identifier in the `fed` claim of the credential.
+**Requirement: When the [[ref: Issuer]] issues credentials in the [[ref: SD-JWT VC]] format, the Issuer MUST place its Entity Identifier in the `fed` claim of the credential.**
 
 ##### Example: SD-JWT VC with Federation Claim
 
@@ -135,7 +151,7 @@ The following non-normative example shows a decoded payload of an [[ref: SD-JWT 
 
 #### W3C VCDM Credentials
 
-When the [[ref: Issuer]] issues credentials in the [[ref: W3C VCDM]] format, the Issuer MUST place a `termsOfUse` property into the credential. The `type` of this `termsOfUse` property MUST be the string `OpenIDFederation` and the `policyId` MUST be the Issuer's Entity Identifier.
+**Requirement: When the [[ref: Issuer]] issues credentials in the [[ref: W3C VCDM]] format, the Issuer MUST place a `termsOfUse` property into the credential. The `type` of this `termsOfUse` property MUST be the string `OpenIDFederation` and the `policyId` MUST be the Issuer's Entity Identifier.**
 
 ##### Example: W3C VCDM Credential with termsOfUse
 
@@ -175,17 +191,19 @@ If the Issuer chooses to make this kind of distinction between the entity issuin
 
 #### Client Identifier Scheme
 
-The Verifier MUST use the `openid_federation:` prefix as defined in [[ref: OID4VP]] Section 5.9.3.
+**Requirement: The Verifier MUST use the `openid_federation:` prefix as defined in [[ref: OID4VP]] Section 5.9.3.**
 
 #### Verifier Metadata Publication
 
-The Verifier MUST place verifier metadata into the Entity Configuration, in the `openid_credential_verifier` property.
+**Requirement: The Verifier MUST place verifier metadata into the Entity Configuration, in the `openid_credential_verifier` property.**
 
 ### Trust Establishment
 
-To establish trust with the issuer (ensure that the issuer can be trusted), the Verifier MUST resolve the Trust Chain from the issuer's Entity Configuration until it finds a Federation Entity it trusts.
+**Requirement: To establish trust with the issuer (ensure that the issuer can be trusted), the Verifier MUST resolve the Trust Chain from the issuer's Entity Configuration until it finds a Federation Entity it trusts.**
 
 #### Example: Verifier Entity Configuration
+
+The following JSON document is a non-normative example of the decoded payload of a Verifier's Entity Configuration.
 
 ```json
 {
