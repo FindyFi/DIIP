@@ -54,7 +54,7 @@ The Credential Issuer's Entity Configuration can be found by appending the strin
 
 The Credential Issuer MAY place additional metadata into the `federation_entity` Entity Type Identifier.
 
-**Requirement: The metadata in the `openid_credential_issuer` property MUST override the metadata in the `federation_entity` property.** For example, if both `openid_credential_issuer.display.name` and `federation_entity.organization_name` exist, the Wallet MUST show the value of `openid_credential_issuer.display.name` as the name of the issuer.
+**Requirement: The metadata in the `openid_credential_issuer` property MUST override the metadata in the `federation_entity` property.** For example, if both `openid_credential_issuer.display.name` and `federation_entity.organization_name` exist, the Wallet MUST show the value of `openid_credential_issuer.display.name` as the name of the Issuer.
 
 #### Example: Credential Issuer Entity Configuration
 
@@ -199,7 +199,7 @@ If the Issuer chooses to make this kind of distinction between the entity issuin
 
 ### Trust Establishment
 
-**Requirement: To establish trust with the issuer (ensure that the issuer can be trusted), the Verifier MUST resolve the Trust Chain from the issuer's Entity Configuration until it finds a Federation Entity it trusts.**
+**Requirement: To establish trust with the Issuer (ensure that the Issuer can be trusted), the Verifier MUST resolve the Trust Chain from the Issuer's Entity Configuration until it finds a Federation Entity it trusts.**
 **Requirement: The Verifier MUST verify that the credential is signed with a key included in the `jwt_vc_issuer` metadata in the Entity Configuration of the Issuer. The `jwks` property in the `jwt_vc_issuer` must contain a key with the `kid` value equal to the `kid` header in the [[ref: SD-JWT VC]] credential.**
 
 #### Example: Verifier Entity Configuration
