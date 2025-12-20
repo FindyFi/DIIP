@@ -126,7 +126,7 @@ The JWKS in the `jwt_vc_issuer` property contains information about the keys use
 
 #### SD-JWT VC Credentials
 
-**Requirement: When the [[ref: Issuer]] issues credentials in the [[ref: SD-JWT VC]] format, the Issuer MUST place its Entity Identifier in the `fed` claim of the credential.**
+**Requirement: When the Issuer issues credentials in the [[ref: SD-JWT VC]] format, the Issuer MUST place its Entity Identifier in the `fed` claim of the credential.**
 
 ##### Example: SD-JWT VC with Federation Claim
 
@@ -151,7 +151,7 @@ The following non-normative example shows a decoded payload of an [[ref: SD-JWT 
 
 #### W3C VCDM Credentials
 
-**Requirement: When the [[ref: Issuer]] issues credentials in the [[ref: W3C VCDM]] format, the Issuer MUST place a `termsOfUse` property into the credential. The `type` of this `termsOfUse` property MUST be the string `OpenIDFederation` and the `policyId` MUST be the Issuer's Entity Identifier.**
+**Requirement: When the Issuer issues credentials in the [[ref: W3C VCDM]] format, the Issuer MUST place a `termsOfUse` property into the credential. The `type` of this `termsOfUse` property MUST be the string `OpenIDFederation` and the `policyId` MUST be the Issuer's Entity Identifier.**
 
 ##### Example: W3C VCDM Credential with termsOfUse
 
@@ -200,7 +200,7 @@ If the Issuer chooses to make this kind of distinction between the entity issuin
 ### Trust Establishment
 
 **Requirement: To establish trust with the issuer (ensure that the issuer can be trusted), the Verifier MUST resolve the Trust Chain from the issuer's Entity Configuration until it finds a Federation Entity it trusts.**
-**Requirement: The [[ref: Verifier]] MUST verify that the credential is signed with a key included in the `jwt_vc_issuer` metadata in the Entity Configuration of the [[ref: Issuer]]. The `jwks` property in the `jwt_vc_issuer` must contain a key with the `kid` value equal to the `kid` header in the [[ref: SD-JWT VC]] credential.**
+**Requirement: The Verifier MUST verify that the credential is signed with a key included in the `jwt_vc_issuer` metadata in the Entity Configuration of the Issuer. The `jwks` property in the `jwt_vc_issuer` must contain a key with the `kid` value equal to the `kid` header in the [[ref: SD-JWT VC]] credential.**
 
 #### Example: Verifier Entity Configuration
 
