@@ -143,7 +143,7 @@ DIIP prefers decentralized identifiers ([[ref: DID]]s) as identifiers. An entity
 
 Signatures in [[ref: Digital Credential]]s can be used to verify that the content of a credential has not been tampered with. But anyone can sign a credential and put anything in the issuer field. [[ref: Digital Credential]] ecosystems require that there is a way for a [[ref: Verifier]] to check who is the [[ref: Issuer]] of a [[ref: Digital Credential]]. Equally, a user might want to be informed about the trustworthiness of a [[ref: Verifier]] before choosing to share credentials.
 
-DIIP enables trust ecosystems to use [[ref: OpenID Fed DCP]] – a light-weight profile of the [[ref: OpenID Federation]], authored for use cases including [[ref: Wallet]]s and [[ref: Digital Credential]]s. The [[ref: OpenID Fed DCP]] specification is an appendix to this version of the DIIP profile. In the future, the [[ref: OpenID Fed DCP]] profile will probably be donated to be maintained elsewhere.
+DIIP enables trust ecosystems to use [[ref: OpenID Fed DCP]] – a light-weight profile of the [[ref: OpenID Federation]], authored for use cases including [[ref: Agent]]s, [[ref: Wallet]]s and [[ref: Digital Credential]]s. The [[ref: OpenID Fed DCP]] specification is an appendix to this version of the DIIP profile. In the future, the [[ref: OpenID Fed DCP]] profile will probably be donated to be maintained elsewhere.
 
 The requirements regarding Trust Establishment are OPTIONAL in DIIP v5.
 

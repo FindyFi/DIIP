@@ -50,7 +50,7 @@ The Credential Issuer's Entity Configuration can be found by appending the strin
 
 **Requirement: The Credential Issuer MUST place the public key material of the keys it uses to sign Digital Credentials in the `jwt_vc_issuer` property. The `jwt_vc_issuer` property MUST include the `jwks` property that contains the Issuer's JSON Web Key Set as defined in RFC7517.** (The `jwt_vc_issuer` property MUST NOT include the `jwks_uri` property.)
 
-**Requirement: If the `openid_credential_issuer` property is found in the Entity Configuration, the Wallet MUST use only it and ignore the issuer metadata published in the well-known location defined in OID4VCI.**
+**Requirement: If the `openid_credential_issuer` property is found in the Entity Configuration, the Wallet MUST use only this medatada and ignore the regular issuer metadata published in the well-known location defined in OID4VCI.**
 
 The Credential Issuer MAY place additional metadata into the `federation_entity` Entity Type Identifier.
 
