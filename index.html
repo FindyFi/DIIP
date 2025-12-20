@@ -47,7 +47,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
                     </header>
       
                     <article id="content">
-                      <h1 id="decentralized-identity-interop-profile-v5-draft"><a class="toc-anchor" href="#decentralized-identity-interop-profile-v5-draft" >§</a> Decentralized Identity Interop Profile v5-draft</h1>
+                      <h1 id="decentralized-identity-interop-profile-v5"><a class="toc-anchor" href="#decentralized-identity-interop-profile-v5" >§</a> Decentralized Identity Interop Profile v5</h1>
 <p><strong>Profile Status:</strong> Draft</p>
 <p><strong>Latest Release:</strong>
 <a path-0="FIDEScommunity.github.io"path-1="DIIP"href="https://FIDEScommunity.github.io/DIIP" >https://FIDEScommunity.github.io/DIIP</a></p>
@@ -108,7 +108,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 </tr>
 <tr>
 <td>Trust Establishment</td>
-<td><span id="term:openid-fed-dcp">OpenID Fed DCP</span> (Appendix B of this profile)</td>
+<td><a class="term-reference" href="#term:openid-fed-dcp">OpenID Fed DCP</a> (Appendix B of this profile)</td>
 </tr>
 </tbody>
 </table>
@@ -280,7 +280,7 @@ OID4VCI <a path-0="openid.net"path-1="specs"path-2="openid-4-verifiable-credenti
 <dt><span id="term:openid-federation">OpenID Federation</span></dt>
 <dd><a path-0="openid.net"path-1="specs"path-2="openid-federation-1_0.html"href="https://openid.net/specs/openid-federation-1_0.html" >OpenID Federation 1.0 - draft 42</a>. Status: draft.</dd>
 <dt><span id="term:openid-fed-dcp">OpenID Fed DCP</span></dt>
-<dd><a href="#federation-profile" >OpenID Federation Digital Credentials Profile - draft 0.1.0</a>. Status: draft.</dd>
+<dd><a href="#appendix-b-openid-federation-digital-credentials-profile" >OpenID Federation Digital Credentials Profile - draft 0.1.0</a>. Status: draft.</dd>
 <dt><span id="term:par">PAR</span></dt>
 <dd><a path-0="datatracker.ietf.org"path-1="doc"path-2="html"path-3="rfc9126"href="https://datatracker.ietf.org/doc/html/rfc9126" >RFC 9126 Pushed Authorization Requests</a>. Status: RFC - Proposed Standard.</dd>
 <dt><span id="term:pkce">PKCE</span></dt>
@@ -427,7 +427,7 @@ OID4VCI <a path-0="openid.net"path-1="specs"path-2="openid-4-verifiable-credenti
 </code></pre>
 <p>The JWKS in the <code>jwt_vc_issuer</code> property contains information about the keys used to sign Digital Credentials. The JWKS on the root level of the Entity Configuration contains information about the key used to sign the Entity Configuration. In the example, the same key is used, but the keys MAY be different.</p>
 <h4 id="sd-jwt-vc-credentials"><a class="toc-anchor" href="#sd-jwt-vc-credentials" >§</a> SD-JWT VC Credentials</h4>
-<p><strong>Requirement: When the <a class="term-reference" href="#term:issuer">Issuer</a> issues credentials in the <a class="term-reference" href="#term:sd-jwt-vc">SD-JWT VC</a> format, the Issuer MUST place its Entity Identifier in the <code>fed</code> claim of the credential.</strong></p>
+<p><strong>Requirement: When the Issuer issues credentials in the <a class="term-reference" href="#term:sd-jwt-vc">SD-JWT VC</a> format, the Issuer MUST place its Entity Identifier in the <code>fed</code> claim of the credential.</strong></p>
 <h5 id="example-sd-jwt-vc-with-federation-claim"><a class="toc-anchor" href="#example-sd-jwt-vc-with-federation-claim" >§</a> Example: SD-JWT VC with Federation Claim</h5>
 <p>The following non-normative example shows a decoded payload of an <a class="term-reference" href="#term:sd-jwt-vc">SD-JWT VC</a> credential with the <code>fed</code> claim:</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
@@ -446,7 +446,7 @@ OID4VCI <a path-0="openid.net"path-1="specs"path-2="openid-4-verifiable-credenti
 <span class="token punctuation">}</span>
 </code></pre>
 <h4 id="w3c-vcdm-credentials"><a class="toc-anchor" href="#w3c-vcdm-credentials" >§</a> W3C VCDM Credentials</h4>
-<p><strong>Requirement: When the <a class="term-reference" href="#term:issuer">Issuer</a> issues credentials in the <a class="term-reference" href="#term:w3c-vcdm">W3C VCDM</a> format, the Issuer MUST place a <code>termsOfUse</code> property into the credential. The <code>type</code> of this <code>termsOfUse</code> property MUST be the string <code>OpenIDFederation</code> and the <code>policyId</code> MUST be the Issuer’s Entity Identifier.</strong></p>
+<p><strong>Requirement: When the Issuer issues credentials in the <a class="term-reference" href="#term:w3c-vcdm">W3C VCDM</a> format, the Issuer MUST place a <code>termsOfUse</code> property into the credential. The <code>type</code> of this <code>termsOfUse</code> property MUST be the string <code>OpenIDFederation</code> and the <code>policyId</code> MUST be the Issuer’s Entity Identifier.</strong></p>
 <h5 id="example-w3c-vcdm-credential-with-termsofuse"><a class="toc-anchor" href="#example-w3c-vcdm-credential-with-termsofuse" >§</a> Example: W3C VCDM Credential with termsOfUse</h5>
 <p>The following non-normative example illustrates the use of the <code>termsOfUse</code> property:</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
@@ -480,7 +480,7 @@ OID4VCI <a path-0="openid.net"path-1="specs"path-2="openid-4-verifiable-credenti
 <p><strong>Requirement: The Verifier MUST place verifier metadata into the Entity Configuration, in the <code>openid_credential_verifier</code> property.</strong></p>
 <h3 id="trust-establishment-3"><a class="toc-anchor" href="#trust-establishment-3" >§</a> Trust Establishment</h3>
 <p><strong>Requirement: To establish trust with the issuer (ensure that the issuer can be trusted), the Verifier MUST resolve the Trust Chain from the issuer’s Entity Configuration until it finds a Federation Entity it trusts.</strong>
-<strong>Requirement: The <a class="term-reference" href="#term:verifier">Verifier</a> MUST verify that the credential is signed with a key included in the <code>jwt_vc_issuer</code> metadata in the Entity Configuration of the <a class="term-reference" href="#term:issuer">Issuer</a>. The <code>jwks</code> property in the <code>jwt_vc_issuer</code> must contain a key with the <code>kid</code> value equal to the <code>kid</code> header in the <a class="term-reference" href="#term:sd-jwt-vc">SD-JWT VC</a> credential.</strong></p>
+<strong>Requirement: The Verifier MUST verify that the credential is signed with a key included in the <code>jwt_vc_issuer</code> metadata in the Entity Configuration of the Issuer. The <code>jwks</code> property in the <code>jwt_vc_issuer</code> must contain a key with the <code>kid</code> value equal to the <code>kid</code> header in the <a class="term-reference" href="#term:sd-jwt-vc">SD-JWT VC</a> credential.</strong></p>
 <h4 id="example-verifier-entity-configuration"><a class="toc-anchor" href="#example-verifier-entity-configuration" >§</a> Example: Verifier Entity Configuration</h4>
 <p>The following JSON document is a non-normative example of the decoded payload of a Verifier’s Entity Configuration.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
