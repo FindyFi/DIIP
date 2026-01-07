@@ -128,7 +128,7 @@ The following JSON document is a non-normative example of the decoded payload of
 }
 ```
 
-The JWKS in the `jwt_vc_issuer` property contains information about the keys used to sign Digital Credentials. The JWKS on the root level of the Entity Configuration contains information about the key used to sign the Entity Configuration. In the example, the same key is used, but the keys MAY be different.
+The JWKS in the `vc_issuer` Entity Type Identifier contains information about the keys used to sign Digital Credentials. The JWKS on the root level of the Entity Configuration contains information about the key used to sign the Entity Configuration. In the example, the same key is used, but the keys MAY be different.
 
 #### SD-JWT VC Credentials
 
@@ -212,7 +212,7 @@ The Verifier MAY place additional metadata into the `federation_entity` Entity T
 ### Trust Establishment
 
 **Requirement: To establish trust with the Issuer (ensure that the Issuer can be trusted), the Verifier MUST resolve the Trust Chain from the Issuer's Entity Configuration until it finds a Federation Entity it trusts.**
-**Requirement: The Verifier MUST verify that the credential is signed with a key included in the `jwt_vc_issuer` metadata in the Entity Configuration of the Issuer. The `jwks` property in the `jwt_vc_issuer` must contain a key with the `kid` value equal to the `kid` header in the [[ref: SD-JWT VC]] credential.**
+**Requirement: The Verifier MUST verify that the credential is signed with a key included in the `vc_issuer` metadata in the Entity Configuration of the Issuer. The `jwks` property in the `vc_issuer` must contain a key with the `kid` value equal to the `kid` header in the [[ref: SD-JWT VC]] credential.**
 
 #### Example: Verifier Entity Configuration
 
