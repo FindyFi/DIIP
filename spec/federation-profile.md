@@ -2,7 +2,7 @@
 
 ### Introduction
 
-This specification profiles OpenID Federation [[ref: OpenID Federation]] for use with digital credentials, specifically focusing on credential issuance via OpenID for Verifiable Credential Issuance [[ref: OID4VCI]] and credential presentation via OpenID for Verifiable Presentations [[ref: OID4VP]].
+This specification profiles [[ref: OpenID Federation]] for use with digital credentials, specifically focusing on credential issuance via OpenID for Verifiable Credential Issuance ([[ref: OID4VCI]]) and credential presentation via OpenID for Verifiable Presentations ([[ref: OID4VP]]).
 
 The profile simplifies federation usage by limiting scope to trust chain resolution and metadata discovery, while omitting more complex features such as federation policies and trust marks.
 
@@ -16,19 +16,21 @@ This profile applies to:
 
 This profile does not apply to and does not require conforming implementations to support:
 
-- Chapter 6 (Federation Policy) of OpenID Federation
-- Chapter 7 (Trust Marks) of OpenID Federation  
-- Chapter 12 (OpenID Connect Client Registration) of OpenID Federation
+- Chapter 6 (Federation Policy)
+- Chapter 7 (Trust Marks)
+- Chapter 12 (OpenID Connect Client Registration)
+
+of [[ref: OpenID Federation]].
 
 ### Terminology
 
-This specification uses the terms defined in OpenID Federation [[ref: OpenID Federation]], OpenID for Verifiable Credential Issuance [[ref: OID4VCI]], OpenID for Verifiable Presentations [[ref: OID4VP]], and SD-JWT VC [[ref: SD-JWT VC]].
+This specification uses the terms defined in [[ref: OpenID Federation]], [[ref: OID4VCI]],  [[ref: OID4VP]], and [[ref: SD-JWT VC]].
 
-**Entity Identifier**: As defined in OpenID Federation, a URL that uniquely identifies a federation entity.
+**Entity Identifier**: As defined in [[ref: OpenID Federation]], a URL that uniquely identifies a federation entity.
 
-**Entity Configuration**: As defined in OpenID Federation, a signed JWT published at the Entity Identifier's `/.well-known/openid-federation` endpoint containing metadata and authority hints.
+**Entity Configuration**: As defined in [[ref: OpenID Federation]], a signed JWT published at the Entity Identifier's `/.well-known/openid-federation` endpoint containing metadata and authority hints.
 
-**Trust Chain**: As defined in OpenID Federation, a sequence of Entity Statements from a Leaf Entity through intermediate entities to a Trust Anchor.
+**Trust Chain**: As defined in [[ref: OpenID Federation]], a sequence of Entity Statements from a Leaf Entity through intermediate entities to a Trust Anchor.
 
 **Issuer**: The role of the entity issuing credentials as defined in [[ref: W3C VCDM]]
 
@@ -42,19 +44,21 @@ This specification uses the terms defined in OpenID Federation [[ref: OpenID Fed
 
 **Requirement: The Credential Issuer MUST use the value of the `credential_issuer` in its OID4VCI issuer metadata as its Entity Identifier.**
 
-The Credential Issuer's Entity Configuration can be found by appending the string `/.well-known/openid-federation` to the Entity Identifier.
+The Credential Issuer's Entity Configuration can be found using the method described in the chapter 9 of [[ref: OpenID Federation]].
 
 #### Issuer Metadata Publication
 
-**Requirement: The Credential Issuer MUST place the OpenID4VCI issuer metadata into the Entity Configuration, in the `openid_credential_issuer` property.**
+**Requirement: The Credential Issuer MUST place the OpenID4VCI issuer metadata into the Entity Configuration, in the `openid_credential_issuer` Entity Type Identifier.**
 
-**Requirement: The Credential Issuer MUST place the public key material of the keys it uses to sign Digital Credentials in the `jwt_vc_issuer` property. The `jwt_vc_issuer` property MUST include the `jwks` property that contains the Issuer's JSON Web Key Set as defined in RFC7517.** (The `jwt_vc_issuer` property MUST NOT include the `jwks_uri` property.)
+**Requirement: If the `openid_credential_issuer` Entity Type Identifier is found in the Entity Configuration, the Wallet MUST use only this medatada and ignore the regular issuer metadata published in the well-known location defined in [[ref: OID4VCI]].**
 
-**Requirement: If the `openid_credential_issuer` property is found in the Entity Configuration, the Wallet MUST use only this medatada and ignore the regular issuer metadata published in the well-known location defined in OID4VCI.**
+**Requirement: The Credential Issuer MUST place the public key material of the keys it uses to sign Digital Credentials in the `jwks` property of the `vc_issuer` Entity Type Identifier using the syntax specified in the chapter 5.2.1. of the [[ref: OpenID Federation]].**
+
+**Requirement: The Credential Issuer MUST include the `federation_entity` Entity Type Identifier with the `display_name` property in the Entity Configuration.**
 
 The Credential Issuer MAY place additional metadata into the `federation_entity` Entity Type Identifier.
 
-**Requirement: The metadata in the `openid_credential_issuer` property MUST override the metadata in the `federation_entity` property.** For example, if both `openid_credential_issuer.display.name` and `federation_entity.organization_name` exist, the Wallet MUST show the value of `openid_credential_issuer.display.name` as the name of the Issuer.
+**Requirement: The Wallet MUST use the value of the `display_name` property in the `federation_entity` Entity Type Identifier when showing information about the Credential Issuer to the user of the Wallet.**
 
 #### Example: Credential Issuer Entity Configuration
 
@@ -68,6 +72,8 @@ The following JSON document is a non-normative example of the decoded payload of
   "exp": 1616239322,
   "metadata": {
     "federation_entity": {
+      "display_name": "Example Issuer",
+      "logo_uri": "https://credential-issuer.example/logo.png",
       "organization_name": "Example Credential Issuer",
       "contacts": ["support@credential-issuer.example"]
     },
@@ -91,7 +97,7 @@ The following JSON document is a non-normative example of the decoded payload of
         "sd_jwt_vc_example": "..."
       }
     },
-    "jwt_vc_issuer": {
+    "vc_issuer": {
       "jwks": [
         {
           "kty": "EC",
@@ -183,7 +189,7 @@ The following non-normative example illustrates the use of the `termsOfUse` prop
 
 The Issuer defined in the digital credential (the value of the `iss` claim in SD-JWT VC credentials or the value of the `id` of the `issuer` property in W3C VCDM credentials) is not necessarily the same entity as the Credential Issuer defined in the property `credential_issuer` in the OID4VCI metadata.
 
-For example, the OpenID Federation Entity Identifier of the Issuer of the credential could be `https://university-of-utopia.example.edu` and the OpenID Federation Entity Identifier of the Credential Issuer could be `https://credentials.ministryofeducation.example.edu`.
+For example, the [[ref: OpenID Federation]] Entity Identifier of the Issuer of the credential could be `https://university-of-utopia.example.edu` and the [[ref: OpenID Federation]] Entity Identifier of the Credential Issuer could be `https://credentials.ministryofeducation.example.edu`.
 
 If the Issuer chooses to make this kind of distinction between the entity issuing the credential and the technical service used for issuance, it is RECOMMENDED that the Entity Configuration of the technical service has an `authority_hints` value pointing to the Issuer's Entity Identifier and the Issuer publishes a Subordinate Statement about the technical service.
 
@@ -195,7 +201,13 @@ If the Issuer chooses to make this kind of distinction between the entity issuin
 
 #### Verifier Metadata Publication
 
-**Requirement: The Verifier MUST place verifier metadata into the Entity Configuration, in the `openid_credential_verifier` property.**
+**Requirement: The Verifier MUST place verifier metadata into the Entity Configuration, in the `openid_credential_verifier` Entity Type Identifier.**
+
+**Requirement: The Verifier MUST include the `federation_entity` Entity Type Identifier with the `display_name` property in the Entity Configuration.**
+
+The Verifier MAY place additional metadata into the `federation_entity` Entity Type Identifier.
+
+**Requirement: The Wallet MUST use the value of the `display_name` property in the `federation_entity` Entity Type Identifier when showing information about the Verifier to the user of the Wallet.**
 
 ### Trust Establishment
 
@@ -214,6 +226,8 @@ The following JSON document is a non-normative example of the decoded payload of
   "exp": 1616239323,
   "metadata": {
     "federation_entity": {
+      "display_name": "Example Credential Verifier",
+      "logo_uri": "https://credential-verifier.example/logo.png",
       "organization_name": "Example Credential Verifier",
       "contacts": ["support@credential-verifier.example"]
     },
