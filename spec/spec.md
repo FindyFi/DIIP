@@ -37,7 +37,7 @@ The Decentralized Identity Interop Profile, or DIIP for short, defines requireme
 | Issuance protocol                                                        | OpenID for Verifiable Credentials Issuance 1.0 ([[ref: OID4VCI]]) (Final).                     |
 | Presentation protocol                                                    | OpenID for Verifiable Presentations 1.0 ([[ref: OID4VP]]) (Final)                              |
 | Revocation mechanism                                                     | [[ref: IETF Token Status List]] (Draft 13, 2025-11-11)                                         |
-| Trust Establishment                                                      | [[ref: OpenID Fed DCP]] (Appendix B of this profile)                                           |
+| Trust Establishment (optional)                                           | [[ref: OpenID Fed DCP]] (Appendix B of this profile)                                           |
 
 The [Normative References](#normative-references) section links to the versions of specifications that DIIP-compliant implementations must support.
 
