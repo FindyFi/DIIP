@@ -31,12 +31,12 @@ The Decentralized Identity Interop Profile, or DIIP for short, defines requireme
 | Purpose                                                                  | Specification                                                                                  |
 | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
 | Credential format                                                        | [[ref: W3C VCDM]] 2.0 (20 March 2025) and [[ref: SD-JWT VC]] (draft 13)                        |
-| Signature scheme                                                         | SD-JWT as specified in [[ref: VC-JOSE-COSE]] (20 March 2025) and [[ref: SD-JWT VC]] (draft 13) |
+| Signature scheme                                                         | SD-JWT as specified in [[ref: VC-JOSE-COSE]] (15 May 2025) and [[ref: SD-JWT VC]] (draft 13)   |
 | Signature algorithm                                                      | [[ref: ES256]] (RFC 7518 May 2015)                                                             |
 | Identifying [[ref: Issuer]]s, [[ref: Holder]]s, and [[ref: Verifier]]s   | [[ref: did:jwk]] (Commit 8137ac4, Apr 14 2022) and [[ref: did:web]] (31 July 2024)             |
 | Issuance protocol                                                        | OpenID for Verifiable Credentials Issuance 1.0 ([[ref: OID4VCI]]) (Final).                     |
 | Presentation protocol                                                    | OpenID for Verifiable Presentations 1.0 ([[ref: OID4VP]]) (Final)                              |
-| Revocation mechanism                                                     | [[ref: IETF Token Status List]] (Draft 13, 2025-11-11)                                         |
+| Revocation mechanism                                                     | [[ref: IETF Token Status List]] (Draft 15, 2026-01-08)                                         |
 | Trust Establishment (optional)                                           | [[ref: OpenID Fed DCP]] (Appendix B of this profile)                                           |
 
 The [Normative References](#normative-references) section links to the versions of specifications that DIIP-compliant implementations must support.
@@ -307,7 +307,7 @@ This section consolidates in one place common terms used across open standards t
 ~ `ECDSA` using `P-256` ([[ref: Secp256r1]]) and `SHA-256` as specified in [RFC 7518 JSON Web Algorithms (JWA)](https://datatracker.ietf.org/doc/html/rfc7518). Status: RFC - Proposed Standard.
 
 [[def: IETF Token Status List]]
-~ [Token Status List - draft 13](https://datatracker.ietf.org/doc/draft-ietf-oauth-status-list/13/). Status: Internet-Draft.
+~ [Token Status List - draft 15](https://datatracker.ietf.org/doc/draft-ietf-oauth-status-list/15/). Status: Internet-Draft.
 
 [[def: OID4VCI]]
 ~ [OpenID for Verifiable Credential Issuance 1.0](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html). Status: Final.
@@ -335,10 +335,10 @@ This section consolidates in one place common terms used across open standards t
 ~ This curve is called `P-256` in [RFC 7518 JSON Web Algorithms (JWA)](https://datatracker.ietf.org/doc/html/rfc7518). Status: RFC - Proposed Standard.
 
 [[def: W3C VCDM]]
-~ [Verifiable Credentials Data Model v2.0](https://www.w3.org/TR/vc-data-model-2.0/). Status: W3C Proposed Recommendation.
+~ [Verifiable Credentials Data Model v2.0](https://www.w3.org/TR/2025/REC-vc-data-model-2.0-20250515/). Status: W3C Recommendation.
 
 [[def: VC-JOSE-COSE]]
-~ [Securing Verifiable Credentials using JOSE and COSE](https://www.w3.org/TR/vc-jose-cose/). Status: W3C Proposed Recommendation.
+~ [Securing Verifiable Credentials using JOSE and COSE](https://www.w3.org/TR/2025/REC-vc-jose-cose-20250515/). Status: W3C Recommendation.
 
 ### Non-Normative References
 
