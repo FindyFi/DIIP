@@ -50,7 +50,7 @@ The main objective of this profile is to allow for easy adoption and use the min
 
 The Decentralized Identity Interop Profile v5 is approved by the FIDES Community on January 15<sup>th</sup>, 2026.
 
-The latest published DIIP profile can be found at [https://FIDEScommunity.github.io/DIIP/](https://FIDEScommunity.github.io/DIIP/). The latest working group draft can be found at[https://FIDEScommunity.github.io/DIIP/draft](https://FIDEScommunity.github.io/DIIP/draft).
+The latest published DIIP profile can be found at [https://FIDEScommunity.github.io/DIIP/](https://FIDEScommunity.github.io/DIIP/). The latest working group draft can be found at [https://FIDEScommunity.github.io/DIIP/draft](https://FIDEScommunity.github.io/DIIP/draft).
 
 ### Audience
 
