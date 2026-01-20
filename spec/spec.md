@@ -87,7 +87,7 @@ The [Terminology](#terminology) section explains the key terms used in this prof
 
 The [[ref: W3C VCDM]] specification defines a data model for [[ref: Digital Credential]]s but does not prescribe standards for transport protocol, key management, authentication, query language, etc.
 
-The ([[ref: OID4VCI]]) and ([[ref: OID4VP]]) protocols define the interaction between [[ref: Wallet]]s and [[ref: Agent]]s but don't specify a data model or a credential format.
+The [[ref: OID4VCI]] and [[ref: OID4VP]] protocols define the interaction between [[ref: Wallet]]s and [[ref: Agent]]s but don't specify a data model or a credential format.
 
 This interoperability profile makes selections by combining a set of specifications. It chooses standards for credential format, signature algorithm, identifying actors, and issuance and presentation protocols. Instead of saying, "*We use [[ref: W3C VCDM]] credentials signed with [[ref: VC-JOSE-COSE]] using [[ref: ES256]] as the signature algorithm, [[ref: OID4VCI]] as the issuance protocol, and [[ref: OID4VP]] as the presentation protocol, and [[ref: OpenID Federation]] for trust establishment*", you can just say, "*We use DIIP v5*".
 
@@ -101,13 +101,17 @@ The design goal for DIIP is to ensure interoperability between [[ref: Wallet]]s 
 
 ### Relationship to eIDAS Regulation and HAIP Profile
 
-In the context of the European eIDAS regulation ([[ref: eIDAS]]) and its Architecture and Reference Framework ([[ref: ARF]]), the DIIP profile is a profile for "regular" digital credentials, "non-qualified electronic attestations of attributes".
+The DIIP profile is intended to be complementary to the OpenID4VC High Assurance Interoperability Profile ([[ref: HAIP]]). Both profiles build on the OpenID for Verifiable Credentials specifications ([[ref: OID4VCI]] and [[ref: OID4VP]]), but they address different interoperability scopes and assurance needs.
 
-[[ref: Wallet]]s and [[ref: Agent]]s may support both DIIP and the OpenID4VC High Assurance Interoperability Profile ([[ref: HAIP]]). [[ref: HAIP]] is targeted for high-assurance use cases where it is important to bind the credentials to the [[ref: Holder]]'s private key (device binding). DIIP is the profile for other use cases.
+DIIP is an interoperability profile that includes the W3C Decentralized Identifiers specification ([[ref: DID Core]]) and the Verifiable Credentials Data Model 2.0 ([[ref: W3C VCDM]]). These specifications are not part of the HAIP interoperability profile.
 
-The standards used in the DIIP profile are the same ones that the [[ref: ARF]] uses, but DIIP makes different choices to [[ref: HAIP]] in some areas where [[ref: OID4VCI]] and [[ref: OID4VP]] provide optionality.
+DIIP explicitly targets multi-party interoperability scenarios in cross-domain and global ecosystems. These scenarios require identifier-agnostic and Linked Data–based interoperability, with a focus on business wallets, rather than personal wallets only. This makes DIIP particularly relevant for ecosystems such as [Gaia-X](https://gaia-x.eu/), [Catena-X](https://catena-x.net/), [IDSA](https://internationaldataspaces.org/) and [SIMPL](https://simpl-programme.ec.europa.eu/) (Data Spaces), [UNTP](https://untp.unece.org/) and [CIRPASS-2](https://cirpass2.eu/) (Digital Product Passports), [MOSIP](https://www.mosip.io/) (Digital Public Infrastructure), [EU CitiVERSE](https://www.cu-project.eu/citiverse) (Local Digital Twins), [Open Badges](https://www.1edtech.org/standards/open-badges) (Skills/Certificates/Diplomas), and the [Swiss E-ID](https://www.eid.admin.ch/en/e-id-e) Ecosystem.
 
-While DIIP is a standalone profile and enables interoperability on it's own, it is designed to build upon and integrate with the EUDI wallet. Therefore, DIIP implementers who want to integrate with the EUDI Wallet should support [[ref: HAIP]] and the implementation regulations issued by the European Commission.
+In the European context, [[ref: HAIP]] is typically used for high-assurance use cases, including those involving Qualified Electronic Attestations of Attributes (*QEAA*). DIIP can be applied to use cases with lower assurance requirements, for example where Electronic Attestations of Attributes (*EAA*) are sufficient, or where device binding or qualified attestation is not required, while still enabling interoperability based on the same foundations of [[ref: OID4VCI]], [[ref: OID4VP]], and [[ref: SD-JWT VC]].
+
+While DIIP is a standalone interoperability profile and enables interoperability on its own, it is designed to coexist with and complement [[ref: HAIP]]. Wallets and agents may therefore support both profiles, selecting the appropriate one based on the assurance requirements of a given use case.
+
+Wallet providers are encouraged to implement both [[ref: HAIP]] and DIIP, enabling them to support a broad range of assurance levels, use cases, and ecosystems using a common  foundation.
 
 ## Profile
 
@@ -297,6 +301,9 @@ This section consolidates in one place common terms used across open standards t
 
 ### Normative References
 
+[[def: DID Core]]
+~ [Decentralized Identifiers (DIDs) v1.0](https://www.w3.org/TR/did-1.0/). Status: W3C Recommendation.
+
 [[def: did:jwk]]
 ~ [did:jwk Method Specification](https://github.com/quartzjer/did-jwk/blob/main/spec.md). Status: Draft.
 
@@ -347,12 +354,6 @@ This section consolidates in one place common terms used across open standards t
 
 [[def: Bitstring Status List]]
 ~ [Bitstring Status List v1.0](https://www.w3.org/TR/vc-bitstring-status-list/). Status: W3C Proposed Recommendation.
-
-[[def: DID Core]]
-~ [Decentralized Identifiers (DIDs) v1.0](https://www.w3.org/TR/did-1.0/). Status: W3C Recommendation.
-
-[[def: eIDAS]]
-~ [Regulation (EU) No 910/2014 of the European Parliament and of the Council of 23 July 2014 on electronic identification and trust services for electronic transactions in the internal market and repealing Directive 1999/93/EC](https://eur-lex.europa.eu/eli/reg/2014/910). Status: In force.
 
 [[def: HAIP]]
 ~ [OpenID4VC High Assurance Interoperability Profile](https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0.html). Status: Draft.
